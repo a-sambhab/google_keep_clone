@@ -1,30 +1,17 @@
-import React, {useState, styled} from 'react';
-// import Styled
-// import Data,{setData} from './Data';
-// import AddCircleIcon from '@material-ui/icons/AddCircle';
-import DeleteOutlineOutlinedIcon from '@material-ui/icons/DeleteOutlineOutlined';
-// import { display } from '@material-ui/system';
+import React, {useState} from 'react';
 
-// const Icon = styled.div`
-//     background-color:Green;
-// `;
 
-const Icon = {
-    fontSize:'30px', 
-    backgroundColor:'rgb(255, 196, 0)', 
-    color:'white', 
-    borderRadius:'50%',
-    display:"relative",
-    bottom:'0px',
-    cursor:'pointer'
-}
 
-const CreateNote = () => {
-    const [Data, setData] = useState([]);
+
+const CreateNote = (props) => {
+    const [Data, setData] = useState({
+        title: "",
+        note: "",
+        link: ""
+    });
     const [show, setshow] = useState(false);
     const [hide, setHide] = useState(true);
-    const [title, setTitle] = useState("");
-    const [note, setNote] = useState("");
+    
     const Change = () => {
         setshow(true);
         setHide(false);
@@ -33,54 +20,36 @@ const CreateNote = () => {
         setshow(false);
         setHide(true);
     }
-    const getTitle = (event) => {
-        setTitle(event.target.value);
-    }
     const getNote = (event) => {
-        setNote(event.target.value);
-    }
-    const sendData = () => {
-        setData((oldData) => {
-            return[...oldData, {title, note}];
-        });
-        setTitle("");
-        setNote("");
-    }
-    const deleteIcon = (id) => {
-        console.log('deleted');
-        setData((oldItems) => {
-          return oldItems.filter((arrayElem, index)=>{
-            return index!==id;
-          })
+        const {name, value} = event.target
+        setData((oldData)=>{
+            return({
+                ...oldData,
+                [name] : value,
+            })
         })
-      }
+    }
+    const addEvent = () => {
+        props.passNote(Data);
+        setData({
+            title: "",
+            note: "",
+            link: ""
+        });
+    }
+    
       
     return(
         <>
            {show && <div onDoubleClick={Revert} className="createnote">
-                 <input id="notetitle" type="text" value={title} onChange={getTitle} placeholder="Title"/> 
-                 <input id="noteinput" type="text" value={note} onChange={getNote} placeholder="Take a note"/> 
-                 <button id="addicon"  onClick={sendData}> + </button> 
+                 <input id="notetitle" type="text" name="title" value={Data.title} onChange={getNote} placeholder="Title"/> 
+                 <textarea id="noteinput" type="text" name="note" value={Data.note} onChange={getNote} placeholder="Take a note"/> 
+                 <input id="notelink" type="text" name="link" value={Data.link} onChange={getNote} placeholder="Paste links"/> 
+                 <button id="addicon"  onClick={addEvent}> + </button> 
             </div>
            }
             {hide && <input className="hidecontent createnote" onClick={Change}  type="text" placeholder="Take a note"/>}
-            <div className="notesec">
-            {Data.map((props) => {
-                const deleteItem = () => {
-                    deleteIcon(props.id)
-                }
-                {/* const { titlecont, notecont} = item; */}
-                return(
-                    <>
-                        <div className="notediv" id={props.index} key={props.index}>
-                            <h2>{props.title}</h2>
-                            <p>{props.note}</p>
-                        <DeleteOutlineOutlinedIcon onClick={deleteItem} style={Icon}/>
-                        </div>
-                    </>
-                );
-            })}
-            </div>
+            
         </>
     );
 }
